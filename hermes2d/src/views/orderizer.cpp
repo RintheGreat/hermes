@@ -115,11 +115,13 @@ namespace Hermes
       {
         if (this->vertex_count >= this->vertex_size)
         {
-          this->vertex_size *= 2;
-          this->verts = (double3*)realloc(verts, sizeof(double3)* vertex_size);
-          if ((!this->verts))
+          void* new_verts = realloc(verts, sizeof(double3)* (this->vertex_size = this->vertex_size * 1.5));
+          if(new_verts)
+            verts = (double3*)new_verts;
+          else
           {
-            free();
+            this->free();
+            this->deinit_linearizer_base();
             throw Exceptions::Exception("Orderizer out of memory!");
           }
         }
@@ -290,31 +292,7 @@ namespace Hermes
 
         refmap.set_quad_2d(&g_quad_2d_std);
       }
-
-      void Orderizer::add_triangle(int iv0, int iv1, int iv2, int marker)
-      {
-        int index;
-#pragma omp critical(realloc_triangles)
-        {
-          if (triangle_count >= triangle_size)
-          {
-            this->triangle_size *= 2;
-            tri_markers = (int*)realloc(tri_markers, sizeof(int)* triangle_size);
-            tris = (int3*)realloc(tris, sizeof(int3)* triangle_size);
-            if ((!tri_markers) || (!this->tris))
-            {
-              free();
-              throw Exceptions::Exception("Orderizer out of memory!");
-            }
-          }
-          index = triangle_count++;
-        }
-        tris[index][0] = iv0;
-        tris[index][1] = iv1;
-        tris[index][2] = iv2;
-        tri_markers[index] = marker;
-      }
-
+      
       void Orderizer::free()
       {
         if (verts != nullptr)

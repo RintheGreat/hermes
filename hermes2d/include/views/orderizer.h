@@ -74,8 +74,6 @@ namespace Hermes
         char** ltext;
         double2* lbox;
 
-        void add_triangle(int iv0, int iv1, int iv2, int marker);
-
         void add_edge(int iv1, int iv2, int marker);
 
         int add_vertex();

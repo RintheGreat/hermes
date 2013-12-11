@@ -228,8 +228,25 @@ namespace Hermes
         {
           if (edges_count >= edges_size)
           {
-            edges = (int2*)realloc(edges, sizeof(int2)* (edges_size * 1.5));
-            edge_markers = (int*)realloc(edge_markers, sizeof(int)* (edges_size = edges_size * 1.5));
+            void* new_edges = realloc(edges, sizeof(int2)* this->edges_size * 1.5);
+            if(new_edges)
+              edges = (int2*)new_edges;
+            else
+            {
+              this->free();
+              this->deinit_linearizer_base();
+              throw Exceptions::Exception("A linearizer out of memory!");
+            }
+
+            void* new_edge_markers = realloc(edge_markers, sizeof(int)*  (this->edges_size = this->edges_size * 1.5));
+            if(new_edge_markers)
+              edge_markers = (int*)new_edge_markers;
+            else
+            {
+              this->free();
+              this->deinit_linearizer_base();
+              throw Exceptions::Exception("A linearizer out of memory!");
+            }
           }
           edges[edges_count][0] = iv1;
           edges[edges_count][1] = iv2;
@@ -258,8 +275,25 @@ namespace Hermes
         {
           if (triangle_count >= triangle_size)
           {
-            tris = (int3*)realloc(tris, sizeof(int3)* (triangle_size * 2));
-            tri_markers = (int*)realloc(tri_markers, sizeof(int)* (triangle_size = triangle_size * 2));
+            void* new_tris = realloc(tris, sizeof(int3)* triangle_size * 1.5);
+            if(new_tris)
+              tris = (int3*)new_tris;
+            else
+            {
+              this->free();
+              this->deinit_linearizer_base();
+              throw Exceptions::Exception("A linearizer out of memory!");
+            }
+
+            void* new_tri_markers = realloc(tri_markers, sizeof(int)* (triangle_size = triangle_size * 1.5));
+            if(new_tri_markers)
+              tri_markers = (int*)new_tri_markers;
+            else
+            {
+              this->free();
+              this->deinit_linearizer_base();
+              throw Exceptions::Exception("A linearizer out of memory!");
+            }
           }
           index = triangle_count++;
         }
@@ -359,29 +393,48 @@ namespace Hermes
         this->triangle_count = 0;
         this->edges_count = 0;
 
-        if (this->tris)
-          this->tris = (int3*)realloc(this->tris, sizeof(int3)* this->triangle_size);
+        void* new_tris = realloc(tris, sizeof(int3)* this->triangle_size);
+        if(new_tris)
+          tris = (int3*)new_tris;
         else
-          this->tris = (int3*)malloc(sizeof(int3)* this->triangle_size);
-        if (this->tri_markers)
-          this->tri_markers = (int*)realloc(this->tri_markers, sizeof(int)* this->triangle_size);
+        {
+              this->free();
+          this->deinit_linearizer_base();
+          throw Exceptions::Exception("A linearizer out of memory!");
+        }
+
+        void* new_tri_markers = realloc(tri_markers, sizeof(int)* this->triangle_size);
+        if(new_tri_markers)
+          tri_markers = (int*)new_tri_markers;
         else
-          this->tri_markers = (int*)malloc(sizeof(int)* this->triangle_size);
-        if (this->edges)
-          this->edges = (int2*)realloc(this->edges, sizeof(int2)* this->edges_size);
+        {
+          this->deinit_linearizer_base();
+          throw Exceptions::Exception("A linearizer out of memory!");
+        }
+
+        void* new_edges = realloc(edges, sizeof(int2)* this->edges_size);
+        if(new_edges)
+          edges = (int2*)new_edges;
         else
-          this->edges = (int2*)malloc(sizeof(int2)* this->edges_size);
-        if (this->edge_markers)
-          this->edge_markers = (int*)realloc(this->edge_markers, sizeof(int)* this->edges_size);
+        {
+              this->free();
+          this->deinit_linearizer_base();
+          throw Exceptions::Exception("A linearizer out of memory!");
+        }
+
+        void* new_edge_markers = realloc(edge_markers, sizeof(int)* this->edges_size);
+        if(new_edge_markers)
+          edge_markers = (int*)new_edge_markers;
         else
-          this->edge_markers = (int*)malloc(sizeof(int)* this->edges_size);
+        {
+              this->free();
+          this->deinit_linearizer_base();
+          throw Exceptions::Exception("A linearizer out of memory!");
+        }
 
         this->empty = false;
 
         this->reallocate_specific(number_of_elements);
-
-        if (!this->tris || !this->tri_markers || !this->edges || !this->edge_markers)
-          throw Exceptions::Exception("Linearizer out of memory!");
       }
     }
   }

@@ -103,7 +103,7 @@ namespace Hermes
       double3*  lin_tables_quad[2] = { lin_pts_0_quad, lin_pts_1_quad };
       double3** lin_tables[2] = { lin_tables_tri, lin_tables_quad };
 
-      Linearizer::Linearizer(bool auto_max) : LinearizerBase(auto_max), dmult(1.0), component(0), value_type(0), curvature_epsilon(1e-3), fns(nullptr)
+      Linearizer::Linearizer(bool auto_max) : LinearizerBase(auto_max), dmult(1.0), component(0), value_type(0), curvature_epsilon(1e-2), fns(nullptr)
       {
         verts = nullptr;
         xdisp = nullptr;
@@ -519,10 +519,15 @@ namespace Hermes
 
       void Linearizer::reallocate_specific(int number_of_elements)
       {
-        if (this->verts)
-          this->verts = (double3*)realloc(this->verts, sizeof(double3)* this->vertex_size);
-        else
-          this->verts = (double3*)malloc(sizeof(double3)* this->vertex_size);
+        void* new_verts = realloc(verts, sizeof(double3)* this->vertex_size);
+          if(new_verts)
+            verts = (double3*)new_verts;
+          else
+          {
+            this->free();
+            this->deinit_linearizer_base();
+            throw Exceptions::Exception("Orderizer out of memory!");
+          }
 
         //    initialize the hash table
         this->hash_table = (int*)malloc(sizeof(int)* this->vertex_size);
@@ -530,7 +535,7 @@ namespace Hermes
 
         this->info = (int4*)malloc(sizeof(int4)* this->vertex_size);
 
-        if ((!this->hash_table) || (!this->info) || (!this->verts))
+        if ((!this->hash_table) || (!this->info))
         {
           this->deallocate();
           throw Exceptions::Exception("Linearizer out of memory!");
@@ -745,12 +750,16 @@ namespace Hermes
         }
 
         // for contours, without regularization.
-        this->tris_contours = (int3*)realloc(this->tris_contours, sizeof(int3)* this->triangle_count);
-        if (!this->tris_contours)
-        {
-          this->deallocate();
-          throw Exceptions::Exception("Linearizer out of memory!");
-        }
+        void* new_tris_contours = realloc(tris_contours, sizeof(int3)* this->triangle_count);
+          if(new_tris_contours)
+            tris_contours = (int3*)new_tris_contours;
+          else
+          {
+            this->deallocate();
+              this->free();
+            this->deinit_linearizer_base();
+            throw Exceptions::Exception("Linearizer out of memory!");
+          }
 
         memcpy(this->tris_contours, this->tris, this->triangle_count * sizeof(int3));
         triangle_contours_count = this->triangle_count;
@@ -884,17 +893,42 @@ namespace Hermes
       {
         if (this->vertex_count >= this->vertex_size)
         {
-          this->vertex_size *= 2;
-          verts = (double3*)realloc(verts, sizeof(double3)* vertex_size);
-          this->info = (int4*)realloc(info, sizeof(int4)* vertex_size);
-          this->hash_table = (int*)realloc(hash_table, sizeof(int)* vertex_size);
-          memset(this->hash_table + this->vertex_size / 2, 0xff, sizeof(int)* this->vertex_size / 2);
-
-          if ((!verts) || (!this->info) || (!this->hash_table))
+          void* new_verts = realloc(verts, sizeof(double3)* this->vertex_size * 1.5);
+          if(new_verts)
+            verts = (double3*)new_verts;
+          else
           {
             this->deallocate();
+              this->free();
+            this->deinit_linearizer_base();
             throw Exceptions::Exception("Linearizer out of memory!");
           }
+
+          void* new_info = realloc(info, sizeof(int4)* this->vertex_size * 1.5);
+          if(new_info)
+            info = (int4*)new_info;
+          else
+          {
+            this->deallocate();
+              this->free();
+            this->deinit_linearizer_base();
+            throw Exceptions::Exception("Linearizer out of memory!");
+          }
+
+          void* new_hash_table = realloc(hash_table, sizeof(int)* this->vertex_size * 1.5);
+          if(new_hash_table)
+            hash_table = (int*)new_hash_table;
+          else
+          {
+            this->deallocate();
+              this->free();
+            this->deinit_linearizer_base();
+            throw Exceptions::Exception("Linearizer out of memory!");
+          }
+
+          memset(this->hash_table + this->vertex_size, 0xff, sizeof(int)* this->vertex_size * 0.5);
+
+          this->vertex_size *= 1.5;
         }
         return this->vertex_count++;
       }
