@@ -123,7 +123,7 @@ namespace Hermes
           float coord;
           GLVertex2() {};
           GLVertex2(float x, float y, float coord) : x(x), y(y), coord(coord) {};
-          static const size_t H2D_OFFSETOF_COORD = 2*sizeof(float); ///< Offset of coordinate
+          static const size_t H2D_OFFSETOF_COORD = 2 * sizeof(float); ///< Offset of coordinate
         };
 #pragma pack(pop)
 
@@ -149,7 +149,7 @@ namespace Hermes
         bool show_aabb;  ///< true to show the bounding box
         float edges_color[3]; ///< color of edges
 
-        typedef void (*DrawSingleEdgeCallback)(int inx_vert_a, int inx_vert_b, ScalarView* viewer, void* param); ///< A callback function that draws edge using specified vertex indices. Param is user supplied parameter.
+        typedef void(*DrawSingleEdgeCallback)(int inx_vert_a, int inx_vert_b, ScalarView* viewer, void* param); ///< A callback function that draws edge using specified vertex indices. Param is user supplied parameter.
 
         void calculate_mesh_aabb(double* x_min, double* x_max, double* y_min, double* y_max); ///< Calculates AABB from edges.
 
@@ -208,15 +208,17 @@ namespace Hermes
         virtual void on_close();
       };
 #else
-class HERMES_API ScalarView : public View
+      class HERMES_API ScalarView : public View
       {
       public:
-				void init() { throw Hermes::Exceptions::Exception("GLUT disabled."); }
+        void init() { throw Hermes::Exceptions::Exception("GLUT disabled."); }
         ScalarView(const char* title = "ScalarView", WinGeom* wg = nullptr) { throw Hermes::Exceptions::Exception("GLUT disabled."); }
         ScalarView(char* title, WinGeom* wg = nullptr) { throw Hermes::Exceptions::Exception("GLUT disabled."); }
 
         void show(MeshFunctionSharedPtr<double> sln, double eps = HERMES_EPS_NORMAL, int item = H2D_FN_VAL_0,
-          MeshFunctionSharedPtr<double> xdisp = nullptr, MeshFunctionSharedPtr<double> ydisp = nullptr, double dmult = 1.0) { throw Hermes::Exceptions::Exception("GLUT disabled."); }
+          MeshFunctionSharedPtr<double> xdisp = nullptr, MeshFunctionSharedPtr<double> ydisp = nullptr, double dmult = 1.0) {
+          throw Hermes::Exceptions::Exception("GLUT disabled.");
+        }
 
         void show_linearizer_data(double eps = HERMES_EPS_NORMAL, int item = H2D_FN_VAL_0) { throw Hermes::Exceptions::Exception("GLUT disabled."); }
 

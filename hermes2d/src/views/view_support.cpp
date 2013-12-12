@@ -72,7 +72,7 @@ namespace Hermes
 
       static ThreadInfo* view_thread; ///< Current view thread.
 
-      typedef int (*CTC_FUNC)(void*);
+      typedef int(*CTC_FUNC)(void*);
       static CTC_FUNC ctc_function = nullptr;
       static void* ctc_param;
       static int ctc_result;
@@ -107,18 +107,18 @@ namespace Hermes
         init_glut();
 
         //run message loop
-        while(1)
+        while (1)
         {
           //handle glut messages
           glutMainLoopEvent();
 
           //check whether to quit
-          if(thread_info->should_quit)
+          if (thread_info->should_quit)
             break;
 
           //handle CTC
           view_sync.enter();
-          if(ctc_function != nullptr)
+          if (ctc_function != nullptr)
           {
             ctc_result = ctc_function(ctc_param);
             ctc_function = nullptr;
@@ -130,7 +130,7 @@ namespace Hermes
 #ifdef _WINDOWS
           Sleep(10);
 #else
-          usleep(10*1000);
+          usleep(10 * 1000);
 #endif
         }
 
@@ -150,13 +150,13 @@ namespace Hermes
       {
         //check whether the thread is running if not start it
         view_sync.enter();
-        if(view_thread == nullptr)
+        if (view_thread == nullptr)
         {
           ThreadInfo* new_thread_info = nullptr;
           try { new_thread_info = new ThreadInfo(); }
-          catch(std::bad_alloc&) { throw Hermes::Exceptions::Exception("Failed to allocate structure for view thread"); }
+          catch (std::bad_alloc&) { throw Hermes::Exceptions::Exception("Failed to allocate structure for view thread"); }
           int err = pthread_create(&new_thread_info->thread, nullptr, view_thread_func, new_thread_info);
-          if(err)
+          if (err)
           {
             delete new_thread_info;
             throw Hermes::Exceptions::Exception("Failed to create main thread, error: %d", err);
@@ -166,7 +166,7 @@ namespace Hermes
         view_sync.leave();
 
         //make call
-        if(need_safe_call())
+        if (need_safe_call())
         {
           view_sync.enter();
           ctc_function = func;
@@ -185,7 +185,7 @@ namespace Hermes
       {
         TitleParams& title_params = *((TitleParams*)title_pars_ptr);
         std::map<int, View*>::iterator found_view = view_instances.find(title_params.view_id);
-        if(found_view == view_instances.end())
+        if (found_view == view_instances.end())
         {
           throw Exceptions::Exception("Settings title of a view that is not registered.");
           return -1;
@@ -211,7 +211,7 @@ namespace Hermes
 
         //initialize GLEW
         GLenum err = glewInit();
-        if(err != GLEW_OK)
+        if (err != GLEW_OK)
           throw Exceptions::Exception("GLEW error: %s", glewGetErrorString(err));
         glew_initialized = true;
 
@@ -240,14 +240,14 @@ namespace Hermes
       {
         RemoveParams& params = *(RemoveParams*)remove_params_ptr;
         std::map<int, View*>::iterator found_view = view_instances.find(params.view_id);
-        if(found_view == view_instances.end())
+        if (found_view == view_instances.end())
         {
           throw Exceptions::Exception("Removing of a view that is not registered");
           return -1;
         }
 
         //destroy window if requested (it will not be requested when remove is called as a reaction to on_close)
-        if(params.destroy_glut_window)
+        if (params.destroy_glut_window)
         {
           //remove window from GLUT
           glutSetWindow(params.view_id);
@@ -264,7 +264,7 @@ namespace Hermes
         view_instances.erase(found_view);
 
         //thread cleanup
-        if(view_instances.empty())
+        if (view_instances.empty())
         {
           view_thread->should_quit = true;
           view_thread = nullptr;
@@ -283,11 +283,11 @@ namespace Hermes
       {
         int view_id = *((int*)view_id_ptr);
         std::map<int, View*>::iterator found_view = view_instances.find(view_id);
-        if(found_view == view_instances.end())
+        if (found_view == view_instances.end())
           throw Exceptions::Exception("Refreshing a view that is not registered");
 
         //redisplay
-        if(found_view != view_instances.end())
+        if (found_view != view_instances.end())
         {
           glutSetWindow(view_id);
           glutPostRedisplay();
@@ -302,29 +302,29 @@ namespace Hermes
 #define STUB_GET_VIEW() View* wnd = (View*)glutGetWindowData() /* retrieves view for the current GLUT callback */
 #define STUB_CALL(__call) STUB_GET_VIEW(); if(wnd != nullptr) __call; /* calls a method of a view for the current GLUT callbakc */
 
-      void on_display_stub(void) { STUB_CALL( wnd->pre_display() ); }
-      void on_reshape_stub(int width, int height) { STUB_CALL( wnd->on_reshape(width, height) ); }
-      void on_mouse_move_stub(int x, int y) { STUB_CALL( wnd->on_mouse_move(x, y) ); }
-      void on_key_down_stub(unsigned char key, int x, int y) { STUB_CALL( wnd->on_key_down(key, x, y) ); }
-      void on_special_key_stub(int key, int x, int y) { STUB_CALL( wnd->on_special_key(key, x, y) ); }
-      void on_entry_stub(int state) { STUB_CALL( wnd->on_entry(state) ); }
+      void on_display_stub(void) { STUB_CALL(wnd->pre_display()); }
+      void on_reshape_stub(int width, int height) { STUB_CALL(wnd->on_reshape(width, height)); }
+      void on_mouse_move_stub(int x, int y) { STUB_CALL(wnd->on_mouse_move(x, y)); }
+      void on_key_down_stub(unsigned char key, int x, int y) { STUB_CALL(wnd->on_key_down(key, x, y)); }
+      void on_special_key_stub(int key, int x, int y) { STUB_CALL(wnd->on_special_key(key, x, y)); }
+      void on_entry_stub(int state) { STUB_CALL(wnd->on_entry(state)); }
       void on_mouse_click_stub(int button, int state, int x, int y)
       {
         STUB_GET_VIEW();
-        if(wnd == nullptr)
+        if (wnd == nullptr)
           return;
 
         // emulate double-click messages
-        if(state == GLUT_DOWN)
+        if (state == GLUT_DOWN)
         {
           static double last_tick = 0;
           double tick = View::get_tick_count();
           //if(tick < last_tick) //todo
-          if(tick - last_tick < double_click_delay_ms)
+          if (tick - last_tick < double_click_delay_ms)
           {
-            if(button == GLUT_LEFT_BUTTON)
+            if (button == GLUT_LEFT_BUTTON)
               wnd->on_left_mouse_double_click(x, y);
-            else if(button == GLUT_RIGHT_BUTTON)
+            else if (button == GLUT_RIGHT_BUTTON)
               wnd->on_right_mouse_double_click(x, y);
             else
               wnd->on_middle_mouse_double_click(x, y);
@@ -336,23 +336,23 @@ namespace Hermes
         }
 
         // call proper click handler
-        if(button == GLUT_LEFT_BUTTON)
+        if (button == GLUT_LEFT_BUTTON)
         {
-          if(state == GLUT_DOWN)
+          if (state == GLUT_DOWN)
             wnd->on_left_mouse_down(x, y);
           else
             wnd->on_left_mouse_up(x, y);
         }
-        else if(button == GLUT_RIGHT_BUTTON)
+        else if (button == GLUT_RIGHT_BUTTON)
         {
-          if(state == GLUT_DOWN)
+          if (state == GLUT_DOWN)
             wnd->on_right_mouse_down(x, y);
           else
             wnd->on_right_mouse_up(x, y);
         }
         else
         {
-          if(state == GLUT_DOWN)
+          if (state == GLUT_DOWN)
             wnd->on_middle_mouse_down(x, y);
           else
             wnd->on_middle_mouse_up(x, y);
@@ -361,7 +361,7 @@ namespace Hermes
       void on_close_stub()
       {
         STUB_GET_VIEW();
-        if(wnd == nullptr)
+        if (wnd == nullptr)
           return;
 
         //call callback
@@ -382,9 +382,9 @@ namespace Hermes
         static const char* argv[1] = { "x" };
 
         //prepare GLUT environment
-        if(!glut_initialized)
+        if (!glut_initialized)
         {
-          glutInit(&argc, (char**) argv);
+          glutInit(&argc, (char**)argv);
           glut_initialized = true;
         }
         glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_ACCUM);
@@ -442,7 +442,7 @@ namespace Hermes
         view_instances.clear();
 
         //tell thread to finish
-        if(view_thread != nullptr)
+        if (view_thread != nullptr)
         {
           current_thread = view_thread->thread;
           view_thread->should_quit = true;
@@ -451,7 +451,7 @@ namespace Hermes
         view_sync.leave();
 
         //wait for thread to finish
-        if(should_wait)
+        if (should_wait)
         {
           glew_initialized = false;
           pthread_join(current_thread, nullptr);
@@ -465,7 +465,7 @@ namespace Hermes
 
         //tell thread to finish
         view_sync.enter();
-        if(view_thread != nullptr)
+        if (view_thread != nullptr)
         {
           current_thread = view_thread->thread;
           should_wait = true;
@@ -473,7 +473,7 @@ namespace Hermes
         view_sync.leave();
 
         //wait for thread to finish
-        if(should_wait)
+        if (should_wait)
         {
           fprintf(stdout, "%s", text); fflush(stdout);
           pthread_join(current_thread, nullptr);
@@ -484,7 +484,7 @@ namespace Hermes
       {
         //wait for key
         view_sync.enter();
-        if(view_thread != nullptr)
+        if (view_thread != nullptr)
         {
           fprintf(stdout, "%s", text); fflush(stdout);
           view_sync.wait_keypress();

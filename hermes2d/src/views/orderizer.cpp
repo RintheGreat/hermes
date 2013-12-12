@@ -116,7 +116,7 @@ namespace Hermes
         if (this->vertex_count >= this->vertex_size)
         {
           void* new_verts = realloc(verts, sizeof(double3)* (this->vertex_size = this->vertex_size * 1.5));
-          if(new_verts)
+          if (new_verts)
             verts = (double3*)new_verts;
           else
           {
@@ -292,7 +292,7 @@ namespace Hermes
 
         refmap.set_quad_2d(&g_quad_2d_std);
       }
-      
+
       void Orderizer::free()
       {
         if (verts != nullptr)

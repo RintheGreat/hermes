@@ -41,7 +41,7 @@ namespace Hermes
         MeshView(char* title, WinGeom* wg = nullptr);
         ~MeshView();
 
-        void show (MeshSharedPtr mesh);
+        void show(MeshSharedPtr mesh);
         /// Displays element markers.
         void set_b_elem_mrk(bool set);
 

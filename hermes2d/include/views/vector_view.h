@@ -43,7 +43,7 @@ namespace Hermes
 
         inline void set_grid_type(bool hexa) { this->hexa = hexa; refresh(); };
         void set_mode(int mode);
-      
+
         /// Returns the internal vectorizer for the purpose of parameter settings.
         Vectorizer* get_vectorizer();
 
@@ -76,7 +76,7 @@ namespace Hermes
 
         inline void set_grid_type(bool hexa) { throw Hermes::Exceptions::Exception("GLUT disabled."); }
         void set_mode(int mode) { throw Hermes::Exceptions::Exception("GLUT disabled."); }
-      
+
         /// Returns the internal vectorizer for the purpose of parameter settings.
         Vectorizer* get_vectorizer() { throw Hermes::Exceptions::Exception("GLUT disabled."); return nullptr; }
       };

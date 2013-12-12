@@ -485,15 +485,15 @@ namespace Hermes
       void Vectorizer::reallocate_specific(int number_of_elements)
       {
         void* new_verts = realloc(verts, sizeof(double4)* this->vertex_size);
-          if(new_verts)
-            verts = (double4*)new_verts;
-          else
-          {
-            this->free();
+        if (new_verts)
+          verts = (double4*)new_verts;
+        else
+        {
+          this->free();
           this->deallocate();
-            this->deinit_linearizer_base();
-            throw Exceptions::Exception("Orderizer out of memory!");
-          }
+          this->deinit_linearizer_base();
+          throw Exceptions::Exception("Orderizer out of memory!");
+        }
 
         //    initialize the hash table
         this->hash_table = (int*)malloc(sizeof(int)* this->vertex_size);
@@ -503,21 +503,21 @@ namespace Hermes
         this->dashes_size = edges_size;
         this->dashes_count = 0;
         void* new_dashes = realloc(dashes, sizeof(int2)* this->dashes_size);
-          if(new_dashes)
-            dashes = (int2*)new_dashes;
-          else
-          {
-            this->free();
+        if (new_dashes)
+          dashes = (int2*)new_dashes;
+        else
+        {
+          this->free();
           this->deallocate();
-            this->deinit_linearizer_base();
-            throw Exceptions::Exception("Vectorizer out of memory!");
-          }
+          this->deinit_linearizer_base();
+          throw Exceptions::Exception("Vectorizer out of memory!");
+        }
 
         if ((!this->hash_table) || (!this->info))
         {
-            this->free();
+          this->free();
           this->deallocate();
-            this->deinit_linearizer_base();
+          this->deinit_linearizer_base();
           throw Exceptions::Exception("Vectorizer out of memory!");
         }
       }
@@ -892,34 +892,34 @@ namespace Hermes
         if (this->vertex_count >= this->vertex_size)
         {
           void* new_verts = realloc(verts, sizeof(double4)* this->vertex_size * 1.5);
-          if(new_verts)
+          if (new_verts)
             verts = (double4*)new_verts;
           else
           {
             this->deallocate();
-              this->free();
+            this->free();
             this->deinit_linearizer_base();
             throw Exceptions::Exception("Linearizer out of memory!");
           }
 
           void* new_info = realloc(info, sizeof(int4)* this->vertex_size * 1.5);
-          if(new_info)
+          if (new_info)
             info = (int4*)new_info;
           else
           {
             this->deallocate();
-              this->free();
+            this->free();
             this->deinit_linearizer_base();
             throw Exceptions::Exception("Linearizer out of memory!");
           }
 
           void* new_hash_table = realloc(hash_table, sizeof(int)* this->vertex_size * 1.5);
-          if(new_hash_table)
+          if (new_hash_table)
             hash_table = (int*)new_hash_table;
           else
           {
             this->deallocate();
-              this->free();
+            this->free();
             this->deinit_linearizer_base();
             throw Exceptions::Exception("Linearizer out of memory!");
           }
@@ -936,12 +936,12 @@ namespace Hermes
         if (this->dashes_count >= this->dashes_size)
         {
           void* new_dashes = realloc(dashes, sizeof(int2)* (this->dashes_size = this->dashes_size * 2));
-          if(new_dashes)
+          if (new_dashes)
             dashes = (int2*)new_dashes;
           else
           {
             this->free();
-          this->deallocate();
+            this->deallocate();
             this->deinit_linearizer_base();
             throw Exceptions::Exception("Vectorizer out of memory!");
           }

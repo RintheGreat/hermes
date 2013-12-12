@@ -30,7 +30,7 @@ namespace Hermes
     {
       template<typename Scalar>
       BaseView<Scalar>::BaseView(const char* title, WinGeom* wg)
-        : ScalarView((char*) title, wg), sln(MeshFunctionSharedPtr<Scalar>(new Solution<Scalar>())), complex_filter(MeshFunctionSharedPtr<double>())
+        : ScalarView((char*)title, wg), sln(MeshFunctionSharedPtr<Scalar>(new Solution<Scalar>())), complex_filter(MeshFunctionSharedPtr<double>())
       {
         pss = nullptr;
         this->show_edges = true;
@@ -62,17 +62,17 @@ namespace Hermes
       template<typename Scalar>
       void BaseView<Scalar>::free()
       {
-        if(pss != nullptr) { delete pss; pss = nullptr; }
+        if (pss != nullptr) { delete pss; pss = nullptr; }
       }
 
       template<>
       void BaseView<double>::update_solution()
       {
         double* coeffs = new double[ndof];
-        memset(coeffs, 0, sizeof(double) * ndof);
-        if(base_index >= 0)
+        memset(coeffs, 0, sizeof(double)* ndof);
+        if (base_index >= 0)
         {
-          if(base_index < ndof) 
+          if (base_index < ndof)
             coeffs[base_index] = 1.0;
           Solution<double>::vector_to_solution(coeffs, space, sln, pss, false);
         }
@@ -84,16 +84,16 @@ namespace Hermes
         ScalarView::show(sln, eps, item);
         update_title();
 
-        delete [] coeffs;
+        delete[] coeffs;
       }
       template<>
       void BaseView<std::complex<double> >::update_solution()
       {
         std::complex<double>* coeffs = new std::complex<double>[ndof];
         memset(coeffs, 0, sizeof(std::complex<double>) * ndof);
-        if(base_index >= 0)
+        if (base_index >= 0)
         {
-          if(base_index < ndof) coeffs[base_index] = 1.0;
+          if (base_index < ndof) coeffs[base_index] = 1.0;
           Solution<std::complex<double> >::vector_to_solution(coeffs, space, sln, pss, false);
         }
         else
@@ -106,7 +106,7 @@ namespace Hermes
         ScalarView::show(complex_filter, eps, item);
         update_title();
 
-        delete [] coeffs;
+        delete[] coeffs;
       }
 
       template<typename Scalar>
@@ -114,7 +114,7 @@ namespace Hermes
       {
         std::stringstream str;
         str << basic_title << " - dof = " << base_index;
-        if(base_index < 0)
+        if (base_index < 0)
           str << " (Dirichlet lift)";
         View::set_title(str.str().c_str());
       }
@@ -125,12 +125,12 @@ namespace Hermes
         switch (key)
         {
         case GLUT_KEY_LEFT:
-          if(base_index > -1) base_index--;
+          if (base_index > -1) base_index--;
           update_solution();
           break;
 
         case GLUT_KEY_RIGHT:
-          if(base_index < ndof-1) base_index++;
+          if (base_index < ndof - 1) base_index++;
           update_solution();
           break;
 

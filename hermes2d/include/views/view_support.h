@@ -18,7 +18,7 @@
 #ifndef __H2D_VIEW_SUPPORT_H
 #define __H2D_VIEW_SUPPORT_H
 #ifndef NOGLUT
-  #include <pthread.h>
+#include <pthread.h>
 #endif
 namespace Hermes
 {
