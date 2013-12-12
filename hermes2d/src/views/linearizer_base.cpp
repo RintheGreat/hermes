@@ -372,13 +372,13 @@ namespace Hermes
         return this->edges_count;
       }
 
-      static const int default_allocation_multiplier_vertices = 10;
-      static const int default_allocation_multiplier_triangles = 15;
+      static const int default_allocation_multiplier_vertices = 6;
+      static const int default_allocation_multiplier_triangles = 6;
       static const int default_allocation_multiplier_edges = 10;
 
       static const int default_allocation_minsize_vertices = 10000;
-      static const int default_allocation_minsize_triangles = 15000;
-      static const int default_allocation_minsize_edges = 10000;
+      static const int default_allocation_minsize_triangles = 10000;
+      static const int default_allocation_minsize_edges = 15000;
 
       void LinearizerBase::reallocate_common(MeshSharedPtr mesh)
       {
